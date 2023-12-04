@@ -1,7 +1,7 @@
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
-import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeProvider } from "~/context/theme-provider"
 import { api } from "~/utils/api";
 
 import "~/styles/globals.css";

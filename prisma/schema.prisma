@@ -51,7 +51,7 @@ model User {
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
   branch            Branch?
-  yearofpassing     Int?
+  year     Int?
   activityPoints    Int           @default(0)
   isProfileComplete Boolean @default(false)
   team              Team?         @relation(fields: [teamId], references: [id])
