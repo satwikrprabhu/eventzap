@@ -8,6 +8,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {useForm} from "react-hook-form"
@@ -23,32 +30,48 @@ import {
     FormLabel,
     FormMessage,
   } from "@/components/ui/form"
+  import { useToast } from "@/components/ui/use-toast"
 
   const formSchema = z.object({
     name: z.string().min(2, {
       message: "Username must be at least 2 characters.",
     }),
-    branch: z.enum(["CSE","ISE","ECE","AIDS","AIML","RAI","CYBER","FULLSTACK","CCE","EEE","CIVIL","MECH","MCA"]),
+    branch: z.enum(["CSE","ISE","ECE","AIDS","AIML","RAI","CYBER","FULLSTACK","CCE","EEE","CIVIL","MECH","MCA","CYBER","FULLSTACK"]),
     phone: z.string().min(10, {
       message: "Phone number must be at least 10 characters.",
     }),
+    year: z.enum(["1","2","3","4"]),
   })
 
 export function EditProfile() {
+  const { toast } = useToast()
   const user = api.user.getProfile.useQuery()
+  const register = api.user.editProfile.useMutation()
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {
         name: user?.data?.name || '',
         phone: user?.data?.phone || '',
-        
+        // @ts-ignore
+        branch: user?.data?.branch || null,
+        // @ts-ignore
+        year: user?.data?.year || null,
       },
     })
     
-    function onSubmit(values: z.infer<typeof formSchema>) {
-      // Do something with the form values.
-      // ✅ This will be type-safe and validated.
-      console.log(values)
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+      await register.mutate({
+        name: values.name,
+        phone: values.phone,
+        branch: values.branch,
+        year: parseInt(values.year),
+      })
+      register.isSuccess && toast({
+        description: "Profile updated successfully",
+      })
+
+
+      console.log(values);
     }
 
   return (
@@ -80,19 +103,6 @@ export function EditProfile() {
         />
         <FormField
           control={form.control}
-          name="branch"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Branch</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter Branch" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
           name="phone"
           render={({ field }) => (
             <FormItem>
@@ -104,13 +114,67 @@ export function EditProfile() {
             </FormItem>
           )}
         />
-
-        <Button type="submit">Submit</Button>
+         <FormField
+          control={form.control}
+          name="branch"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Enter branch</FormLabel>
+              <FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your Branch" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="CSE">CSE</SelectItem>
+                  <SelectItem value="AIDS">AIDS</SelectItem>
+                  <SelectItem value="AIML">AIML</SelectItem>
+                  <SelectItem value="BT">BT</SelectItem>
+                  <SelectItem value="Civil">Civil</SelectItem>
+                  <SelectItem value="CYBER">CYBER</SelectItem>
+                  <SelectItem value="ECE">ECE</SelectItem>
+                  <SelectItem value="EEE">EEE</SelectItem>
+                  <SelectItem value="FULLSTACK">FULLSTACK</SelectItem>
+                  <SelectItem value="MECH">MECH</SelectItem>
+                  <SelectItem value="ISE">ISE</SelectItem>
+                  <SelectItem value="RAI">R&AI</SelectItem>
+                  <SelectItem value="MCA">MCA</SelectItem>
+                </SelectContent>
+              </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="year"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Year</FormLabel>
+              <FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your year" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="1">1</SelectItem>
+                  <SelectItem value="2">2</SelectItem>
+                  <SelectItem value="3">3</SelectItem>
+                  <SelectItem value="4">4</SelectItem>
+                </SelectContent>
+              </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}/>
+        <Button type="submit" className="text-right">Submit</Button>
       </form>
     </Form>
-        <DialogFooter>
-          <Button type="submit">Save changes</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   )
