@@ -5,7 +5,7 @@ export const userRouter = createTRPCRouter({
     editProfile: protectedProcedure
     .input(
         z.object({
-            name:z.string().nullish(),
+            name:z.string().optional(),
             phone:z.string().nullish(),
             branch:z.enum((Object.values(Branch) as any)),
             year:z.number().nullish(),
@@ -24,10 +24,20 @@ export const userRouter = createTRPCRouter({
             }
         })
     }),
-    getProfile: protectedProcedure.query(({ctx})=>{
-        return ctx.prisma.user.findUnique({
-            where:{
-                id:ctx.session.user.id
+    getProfile: protectedProcedure.query(async ({ctx})=>{
+        return await ctx.prisma.user.findUnique({
+            where: {
+                email: ctx?.session?.user?.email!,
+            },
+            select:{
+                id:true,
+                name:true,
+                email:true,
+                branch:true,
+                phone:true,
+                year:true,
+                createdAt:true,
+                updatedAt:true,
             }
         })
         })

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { DarkModeToggle } from "@/components/DarkModeToggle"
 import { signIn,signOut, useSession } from "next-auth/react"
 import { EditProfile } from "@/components/EditProfile"
+import ProfileButton from "@/components/ProfileButton"
 const Navbar = () => {
 const {data:sessionData} = useSession();
   return (
@@ -21,15 +22,13 @@ const {data:sessionData} = useSession();
             <Link href='/'>About</Link>
           </ul>
           </div>
-          <div className="flex flex-row gap-4">
+          <div className="flex flex-row gap-4 items-center">
             {/* {
                 sessionData?.user ? <Button className="bg-gray-800 text-white dark:bg-gray-100 dark:text-black" onClick={()=>{void signIn("google")}}>Profile</Button> :<></>
             } */}
             {
-                sessionData?.user ?<>
-                <Button className="bg-gray-800 text-white dark:bg-gray-100 dark:text-black dark:hover:bg-gray-300 font-semibold" onClick={()=>{void signOut()}}>Logout</Button>
-                <EditProfile />
-                </>:<Button className="bg-gray-800 text-white dark:bg-gray-100 dark:text-black font-semibold dark:hover:bg-gray-300" onClick={()=>{void signIn("google")}}>Login</Button>
+                <ProfileButton />
+                // <Button className="bg-gray-800 text-white dark:bg-gray-100 dark:text-black font-semibold dark:hover:bg-gray-300" onClick={()=>{void signIn("google")}}>Login</Button>
             }
           <DarkModeToggle />
           </div> 

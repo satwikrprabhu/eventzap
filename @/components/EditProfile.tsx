@@ -36,26 +36,33 @@ import {
     name: z.string().min(2, {
       message: "Username must be at least 2 characters.",
     }),
-    branch: z.enum(["CSE","ISE","ECE","AIDS","AIML","RAI","CYBER","FULLSTACK","CCE","EEE","CIVIL","MECH","MCA","CYBER","FULLSTACK"]),
+    branch: z.enum(["CSE","ISE","ECE","AIDS","AIML","RAI","CYBER","FULLSTACK","CCE","EEE","CIVIL","MECH","MCA","CYBER","FULLSTACK"], {
+      errorMap: (issue, ctx) => ({ message: 'Branch must be selected' })
+    })
+    ,
     phone: z.string().min(10, {
       message: "Phone number must be at least 10 characters.",
     }),
-    year: z.enum(["1","2","3","4"]),
+    year: z.enum(["1","2","3","4"], {
+      errorMap: (issue, ctx) => ({ message: 'Year must be selected' })
+    })
   })
 
 export function EditProfile() {
   const { toast } = useToast()
-  const user = api.user.getProfile.useQuery()
+  const user = api.user.getProfile.useQuery().data
+  console.log(user);
+
   const register = api.user.editProfile.useMutation()
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {
-        name: user?.data?.name || '',
-        phone: user?.data?.phone || '',
+        name: user?.name? user.name : '' ,
+        phone: user?.phone || '',
         // @ts-ignore
-        branch: user?.data?.branch || null,
+        branch: user?.branch || null,
         // @ts-ignore
-        year: user?.data?.year || null,
+        year: user?.year || null,
       },
     })
     
@@ -67,7 +74,10 @@ export function EditProfile() {
         year: parseInt(values.year),
       })
       register.isSuccess && toast({
-        description: "Profile updated successfully",
+        title: "Updated Profile Successfully!",
+        description: "Your profile has been updated successfully.",
+        variant: "default",
+
       })
 
 
