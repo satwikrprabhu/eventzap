@@ -102,7 +102,7 @@ model TeamMember {
 
 model Event {
   id          String        @id @default(cuid())
-  Name        String
+  name        String
   posterUrl   String
   eventDate   DateTime
   location    String
@@ -163,7 +163,7 @@ model Coordinator {
 enum Role {
   USER
   ADMIN
-  Organiser
+  ORGANISER
   COORDINATOR
   CR
   LECTURER

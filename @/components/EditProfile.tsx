@@ -1,37 +1,39 @@
-import { Button } from "@/components/ui/button"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogContent,
+  DialogDescription,
+  Dialog,
+  DialogFooter,
 } from "@/components/ui/dialog"
 import {
-  Select,
+  Select, 
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+
 import z from "zod"
+import { Button } from "@/components/ui/button"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {useForm} from "react-hook-form"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { api } from "~/utils/api"
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-  } from "@/components/ui/form"
-  import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/components/ui/use-toast"
+import { useSession } from "next-auth/react"
 
+//Schema for form validation
   const formSchema = z.object({
     name: z.string().min(2, {
       message: "Username must be at least 2 characters.",
@@ -50,40 +52,53 @@ import {
 
 export function EditProfile() {
   const { toast } = useToast()
-  const user = api.user.getProfile.useQuery().data
-  console.log(user);
-
-  const register = api.user.editProfile.useMutation()
-    const form = useForm<z.infer<typeof formSchema>>({
-      resolver: zodResolver(formSchema),
-      defaultValues: {
-        name: user?.name? user.name : '' ,
-        phone: user?.phone || '',
-        // @ts-ignore
-        branch: user?.branch || null,
-        // @ts-ignore
-        year: user?.year || null,
+  const session = useSession().data
+  const register = api.user.editProfile.useMutation(
+    {
+      //OnSuccess Toast
+      onSuccess: () => {
+        toast({
+          title: "Updated Profile Successfully!",
+          description: "Your profile has been updated successfully.",
+          variant: "default",
+        })
       },
-    })
-    
+      onError:(error)=>{
+        toast({
+          title:"Uh oh! Something went wrong!",
+          description:"Please try again later.",
+          variant:"destructive"
+        })
+      }
+    }
+  )
+    //Default values for form
+     const  form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+          name: session?.user?.name || '' ,
+          phone:session?.user?.phone || '',
+          // @ts-ignore
+          branch: session?.user?.branch?.toString() || '',
+          // @ts-ignore
+          year: session?.user?.year?.toString() || '',
+        },
+      })
+
+
+    //OnSubmit function
     async function onSubmit(values: z.infer<typeof formSchema>) {
-      await register.mutate({
+      register.mutate({
         name: values.name,
         phone: values.phone,
         branch: values.branch,
         year: parseInt(values.year),
       })
-      register.isSuccess && toast({
-        title: "Updated Profile Successfully!",
-        description: "Your profile has been updated successfully.",
-        variant: "default",
-
-      })
-
-
+     
       console.log(values);
     }
-
+    
+    
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -98,6 +113,7 @@ export function EditProfile() {
         </DialogHeader>
         <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+
         <FormField
           control={form.control}
           name="name"
@@ -111,6 +127,7 @@ export function EditProfile() {
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="phone"
@@ -124,6 +141,7 @@ export function EditProfile() {
             </FormItem>
           )}
         />
+
          <FormField
           control={form.control}
           name="branch"
@@ -158,6 +176,7 @@ export function EditProfile() {
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="year"
@@ -182,6 +201,7 @@ export function EditProfile() {
               <FormMessage />
             </FormItem>
           )}/>
+          
         <Button type="submit" className="text-right">Submit</Button>
       </form>
     </Form>

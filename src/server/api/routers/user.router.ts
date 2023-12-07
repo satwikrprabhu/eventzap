@@ -1,4 +1,4 @@
-import {EnumValues, z} from "zod";
+import { z} from "zod";
 import { createTRPCRouter,publicProcedure, protectedProcedure } from "../trpc";
 import { Branch } from "@prisma/client";
 export const userRouter = createTRPCRouter({
@@ -8,19 +8,20 @@ export const userRouter = createTRPCRouter({
             name:z.string().optional(),
             phone:z.string().nullish(),
             branch:z.enum((Object.values(Branch) as any)),
-            year:z.number().nullish(),
+            year:z.number()
         })
     )
     .mutation(async ({ctx,input})=>{
         return ctx.prisma.user.update({
             where:{
-                id:ctx.session.user.id
+                email:ctx?.session?.user?.email || "",
             },
             data:{
                 name:input.name,
                 branch:input.branch,
                 phone:input.phone,
                 year:input.year,
+                isProfileComplete:true
             }
         })
     }),
