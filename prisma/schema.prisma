@@ -12,6 +12,7 @@ datasource db {
   // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
   // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
   url      = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 // Necessary for Next auth
@@ -31,6 +32,7 @@ model Account {
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
@@ -39,6 +41,7 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
 }
 
 model User {
@@ -88,6 +91,7 @@ model Team {
   Winner      Winner?
   attended    Boolean      @default(false)
   TeamMember  TeamMember[]
+  @@index([eventId])
 }
 
 model TeamMember {
@@ -98,6 +102,7 @@ model TeamMember {
   user   User   @relation(fields: [userId], references: [id])
 
   @@unique([teamId, userId])
+  @@index([userId])
 }
 
 model Event {
@@ -113,7 +118,8 @@ model Event {
   minTeamSize Int           @default(1)
   maxTeamSize Int           @default(1)
   released    Boolean       @default(false)
-  eventType   EventType     @default(Technical)
+  eventType   EventType     @default(Solo)
+  category   Category     @default(Technical)
   offorOn     OfforOn       @default(Offline)
   certificate Certificate[]
   team        Team[]
@@ -128,6 +134,7 @@ model Organiser {
   event   Event  @relation(fields: [eventId], references: [id])
 
   @@unique([userId])
+  @@index([eventId])
 }
 
 model Winner {
@@ -187,6 +194,12 @@ enum Post {
 }
 
 enum EventType {
+  Solo
+  Team
+}
+
+
+enum Category {
   Workshop
   Cultural
   Technical
