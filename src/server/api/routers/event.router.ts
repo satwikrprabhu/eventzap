@@ -8,13 +8,13 @@ export const eventRouter = createTRPCRouter({
             name:z.string(),
             description:z.string(),
             posterUrl:z.string(),
-            eventDate:z.date(),
+            eventDate:z.string().datetime(),
             location:z.string(),
             fees:z.number(),
             eventType:z.enum(EventType as any),
             mode: z.enum(OfforOn as any),
-
-
+            minTeamSize:z.number(),
+            maxTeamSize:z.number()
         })
     )
     .mutation(async ({ctx,input})=>{

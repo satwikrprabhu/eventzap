@@ -110,6 +110,7 @@ model Event {
   name        String
   posterUrl   String
   eventDate   DateTime
+  time        DateTime
   location    String
   description String
   fees        Int           @default(0)

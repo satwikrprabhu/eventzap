@@ -32,7 +32,8 @@ import {
   import { api } from "~/utils/api"
   import { useToast } from "@/components/ui/use-toast"
   import { useSession } from "next-auth/react"
-  
+  import { DateTimePicker } from "./DateTimePicker"
+  import { useState } from "react"
 
   //Schema for form validation
     const formSchema = z.object({
@@ -46,7 +47,7 @@ import {
       description: z.string().min(20, {
         message: "Description must have atleast 20 characters.",
       }),
-      eventDate: z.coerce.date(),
+      eventDate: z.string().datetime(),
       location:z.string(),
       fees:z.string().regex(
         /^[0-9]+$/,
@@ -60,19 +61,18 @@ import {
       }),
       minTeamSize:z.string().regex(
         /^[0-9]+$/,
-        "Please enter the correct min team size"
+        "Please enter the correct fee"
       ),
       maxTeamSize:z.string().regex(
         /^[0-9]+$/,
-        "Please enter the correct max team size"
+        "Please enter the correct fee"
       ),
       mode:z.enum(["Offline","Online"], {
         errorMap: (issue, ctx) => ({ message: 'Event type must be selected' })
       })})
-      const datetime = z.date
-
   
   export function CreateEvent() {
+    const [selectedDate,setDate] = useState<Date>();
     const { toast } = useToast()
     const session = useSession().data
     const register = api.event.createEvent.useMutation(
@@ -112,8 +112,10 @@ import {
           fees:parseInt(values.fees),
           location:values.location,
           eventType:values.eventType,
+          minTeamSize:parseInt(values.minTeamSize),
+          maxTeamSize:parseInt(values.maxTeamSize),
           mode:values.mode,
-          eventDate:datetime.parse(values.eventDate)
+          eventDate:values.eventDate
         })
         console.log(values);
       }
@@ -196,11 +198,19 @@ import {
           <FormField
             control={form.control}
             name="eventDate"
-            render={({ field }) => (
+            render={({ field: { onChange, value, ref, name, ...otherFieldProps } }) => (
               <FormItem>
                 <FormLabel>Event Date</FormLabel>
                 <FormControl>
-                <Input type="datetime-local" placeholder="Enter event date"  {...field} />
+                {/* <Input type="datetime-local" placeholder="Enter event date"  {...field} /> */}
+                <DateTimePicker {...otherFieldProps} // spread remaining field props
+                    value={value} 
+                    onChange={(selectedDate:Date) => {
+                      onChange(selectedDate);
+                      setDate(selectedDate); 
+                    }} 
+                    ref={ref} 
+                    name={name} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
