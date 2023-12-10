@@ -19,7 +19,7 @@ import { prisma } from "~/server/db";
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: DefaultSession["user"] & {
-      id: string;
+      id:string;
       branch:string | null | undefined;
       year:number| null | undefined;
       phone:string | null | undefined;
@@ -50,7 +50,8 @@ export const authOptions: NextAuthOptions = {
       session.user.branch=dbUser?.branch;
       session.user.year=dbUser?.year;
       session.user.phone=dbUser?.phone;
-      session.user.role=dbUser?.Role
+      session.user.role=dbUser?.Role;
+      session.user.id=user.id
       return session
     },
   },

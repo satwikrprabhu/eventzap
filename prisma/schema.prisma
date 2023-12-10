@@ -46,17 +46,17 @@ model Session {
 
 model User {
   id                String        @id @default(cuid())
-  name              String?
+  name              String
   email             String       @unique
   emailVerified     DateTime?
-  phone             String?
+  phone             String
   image             String?
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
   branch            Branch?
-  year     Int?
+  year              Int?
   activityPoints    Int           @default(0)
-  isProfileComplete Boolean @default(false)
+  isProfileComplete Boolean       @default(false)
   team              Team?         @relation(fields: [teamId], references: [id])
   teamId            String?
   leaderOf          Team?         @relation(fields: [leaderId], references: [id], name: "TeamLead")
@@ -110,7 +110,6 @@ model Event {
   name        String
   posterUrl   String
   eventDate   DateTime
-  time        DateTime
   location    String
   description String
   fees        Int           @default(0)
@@ -129,13 +128,11 @@ model Event {
 }
 
 model Organiser {
+  id     Int    @id @default(autoincrement())
   userId  String
   user    User   @relation(fields: [userId], references: [id])
-  eventId String
-  event   Event  @relation(fields: [eventId], references: [id])
-
+  event   Event[]  
   @@unique([userId])
-  @@index([eventId])
 }
 
 model Winner {

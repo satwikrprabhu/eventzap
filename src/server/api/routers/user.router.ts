@@ -1,20 +1,20 @@
 import { z} from "zod";
-import { createTRPCRouter,publicProcedure, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { Branch } from "@prisma/client";
 export const userRouter = createTRPCRouter({
     editProfile: protectedProcedure
     .input(
         z.object({
-            name:z.string().optional(),
-            phone:z.string().nullish(),
-            branch:z.enum((Object.values(Branch) as any)),
+            name:z.string(),
+            phone:z.string(),
+            branch:z.enum(["CSE","ISE","AIML","AIDS","RAI","ECE","CYBER","FULLSTACK","CCE","EEE","MECH","CIVIL","MCA"]),
             year:z.number()
         })
     )
     .mutation(async ({ctx,input})=>{
         return ctx.prisma.user.update({
             where:{
-                email:ctx?.session?.user?.email || "",
+                email:ctx?.session?.user?.email ?? "",
             },
             data:{
                 name:input.name,
@@ -28,7 +28,7 @@ export const userRouter = createTRPCRouter({
     getProfile: protectedProcedure.query(async ({ctx})=>{
         return await ctx.prisma.user.findUnique({
             where: {
-                email: ctx?.session?.user?.email!,
+                id:ctx.session.user.id
             },
             select:{
                 id:true,
@@ -41,5 +41,14 @@ export const userRouter = createTRPCRouter({
                 updatedAt:true,
             }
         })
-        })
+        }),
+
+    getAllUsers: protectedProcedure.query(async ({ctx})=>{
+        if(ctx.session?.user.role=="ADMIN"){
+        return await ctx.prisma.user.findMany();
+    }
+    else{
+        throw new Error("You are not an Admin")
+    }
+    }),
 })

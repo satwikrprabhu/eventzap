@@ -27,11 +27,10 @@ import {
   import z from "zod"
   import { Button } from "@/components/ui/button"
   import { zodResolver } from "@hookform/resolvers/zod"
-  import {Controller,useForm} from "react-hook-form"
+  import {useForm} from "react-hook-form"
   import { Input } from "@/components/ui/input"
   import { api } from "~/utils/api"
   import { useToast } from "@/components/ui/use-toast"
-  import { useSession } from "next-auth/react"
   import { DateTimePicker } from "./DateTimePicker"
   import { useState } from "react"
 
@@ -47,7 +46,7 @@ import {
       description: z.string().min(20, {
         message: "Description must have atleast 20 characters.",
       }),
-      eventDate: z.string().datetime(),
+      eventDate: z.date(),
       location:z.string(),
       fees:z.string().regex(
         /^[0-9]+$/,
@@ -70,11 +69,12 @@ import {
       mode:z.enum(["Offline","Online"], {
         errorMap: (issue, ctx) => ({ message: 'Event type must be selected' })
       })})
-  
-  export function CreateEvent() {
+
+
+      
+      export function CreateEvent() {
     const [selectedDate,setDate] = useState<Date>();
     const { toast } = useToast()
-    const session = useSession().data
     const register = api.event.createEvent.useMutation(
       {
         //OnSuccess Toast
@@ -110,12 +110,13 @@ import {
           posterUrl:values.poster,
           description:values.description,
           fees:parseInt(values.fees),
+          category:values.category,
           location:values.location,
           eventType:values.eventType,
           minTeamSize:parseInt(values.minTeamSize),
           maxTeamSize:parseInt(values.maxTeamSize),
-          mode:values.mode,
-          eventDate:values.eventDate
+          offorOn:values.mode,
+          eventDate:values.eventDate,
         })
         console.log(values);
       }
@@ -202,7 +203,6 @@ import {
               <FormItem>
                 <FormLabel>Event Date</FormLabel>
                 <FormControl>
-                {/* <Input type="datetime-local" placeholder="Enter event date"  {...field} /> */}
                 <DateTimePicker {...otherFieldProps} // spread remaining field props
                     value={value} 
                     onChange={(selectedDate:Date) => {
