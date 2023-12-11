@@ -47,6 +47,7 @@ import {
         message: "Description must have atleast 20 characters.",
       }),
       eventDate: z.date(),
+      time:z.string(),
       location:z.string(),
       fees:z.string().regex(
         /^[0-9]+$/,
@@ -111,6 +112,7 @@ import {
           description:values.description,
           fees:parseInt(values.fees),
           category:values.category,
+          time:values.time,
           location:values.location,
           eventType:values.eventType,
           minTeamSize:parseInt(values.minTeamSize),
@@ -190,6 +192,20 @@ import {
                 <FormLabel>Venue</FormLabel>
                 <FormControl>
                 <Input type="name" placeholder="Enter event venue"  {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+<FormField
+            control={form.control}
+            name="time"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Time</FormLabel>
+                <FormControl>
+                <Input type="name" placeholder="Enter event time"  {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -73,7 +73,7 @@ const Admin = () => {
 
     if(session?.data?.user.role!="ADMIN")
       return (
-        <div className='flex min-h-screen flex-col items-center justify-center bg-slate-100 dark:bg-gradient-to-b from-[#19212d] to-[#131539]'>
+        <div className='flex min-h-screen flex-col items-center justify-center bg-slate-100'>
         <h1>Not Authorised</h1>
         </div>
       )

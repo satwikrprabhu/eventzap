@@ -9,6 +9,7 @@ export const eventRouter = createTRPCRouter({
             posterUrl:z.string(),
             eventDate:z.date(),
             location:z.string(),
+            time:z.string(),
             fees:z.number(),
             eventType:z.enum(["Solo","Team"]),
             offorOn: z.enum(["Offline","Online"]),
@@ -78,6 +79,21 @@ export const eventRouter = createTRPCRouter({
         return await ctx.prisma.event.findMany({
             where:{
                released:true
+            },
+            select:{
+                name:true,
+                description:true,
+                posterUrl:true,
+                eventDate:true,
+                location:true,
+                fees:true,
+                eventType:true,
+                time:true,
+                offorOn:true,
+                minTeamSize:true,
+                maxTeamSize:true,
+                category:true,
+                Organiser:true,
             }
         })
     }),
