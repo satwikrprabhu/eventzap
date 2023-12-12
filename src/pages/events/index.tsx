@@ -3,9 +3,37 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { IndianRupee, MapPin, Users } from "lucide-react";
-
+import { useSession } from "next-auth/react";
+import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
+import { set } from "date-fns";
 const Events = () => {
+  const {toast} = useToast();
+    // const [teamId1,setTeamId1] = useState("");
+    // const [eventId1,setEventId1] = useState("");
     const eve = api.event.getPublishedEvents.useQuery();
+    const teamId = api.team.getTeamId.useQuery().data;
+    // const hasregistered = api.event.hasTheUserRegisteredForEvent.useQuery({eventId:eventId1,teamId:teamId1}).data;
+    const register= api.event.registerForEvent.useMutation(
+      {
+        onSuccess: () => {
+          toast({
+            title: "Registered for the event Successfully!",
+            description: "You have registered for the event successfully.",
+            variant: "default",
+          })
+        },
+        onError:(error)=>{
+          toast({
+            title:"Uh oh! Something went wrong!",
+            description:"Please try again later.",
+            variant:"destructive"
+          })
+        }
+      }
+    );
+   
+    const {data:session} = useSession();
   return (
     <div className="max-h-screen mt-28 px-6 max-w-7xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
     {eve.data?.map((event)=>(
@@ -94,12 +122,15 @@ const Events = () => {
                     </div>
                 
               }
-                </div>
-
-               
-
-                
-            <Link  className="text-lg w-full font-semibold text-white" href={`/events/`}><Button size={"lg"} className="font-medium w-full">Register</Button></Link>
+                </div>   
+                {session?.user && teamId ? <Button size={"lg"} className="font-semibold w-full text-base text-black" onClick={()=>{register.mutateAsync({
+              eventId:event.id,
+              teamId:teamId
+            })
+          } }>Register</Button> :
+                <Button size={"lg"} className="font-semibold w-full text-base text-white bg-gray-600 hover:bg-gray-600">Register</Button>
+                }
+            
             </div>
           </div>
             </div>
