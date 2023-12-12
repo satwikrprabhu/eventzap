@@ -80,7 +80,7 @@ const Admin = () => {
       else{
         return(
         
-        <div className='min-h-screen flex justify-center pt-10 bg-slate-100 dark:bg-gradient-to-b from-[#19212d] to-[#131539]'>
+        <div className='min-h-screen flex justify-center pt-10 bg-slate-100 dark:bg-gradient-to-b from-[#161a27] to-[#181a45]'>
             <Tabs defaultValue="password" className="w-[300px] md:w-2/3 pt-20 sticky">
       <TabsList className="grid w-full grid-cols-2 md:text-4xl">
         <TabsTrigger value="password" className='text-lg md:text-2xl'>All Users</TabsTrigger>

@@ -18,7 +18,7 @@ const {data:sessionData} = useSession();
           <ul className="flex flex-row gap-12 text-lg font-semibold">
             <Link href='/'>Home</Link>
             <Link href='/events'>Events</Link>
-            <Link href='/'>Team</Link>
+            <Link href='/team'>Team</Link>
             <Link href='/'>About</Link>
           </ul>
           </div>

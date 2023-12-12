@@ -8,11 +8,11 @@ const Events = () => {
     const eve = api.event.getPublishedEvents.useQuery();
   return (
     <div className="max-h-screen mt-28 px-6 max-w-7xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-    {eve.data?.map((event:any)=>(
+    {eve.data?.map((event)=>(
           <div className="dark:bg-slate-900 backdrop-blur-sm flex h-full flex-col cursor-pointer p-4 rounded-sm">
         <div className="relative grow">
         <Image
-                src={event.image}
+                src={event.posterUrl}
                 alt={event.name}
                 width={500}
                 height={300}
@@ -99,7 +99,7 @@ const Events = () => {
                
 
                 
-            <Link  className="text-lg w-full font-semibold text-white" href={`/events/${event.id}`}><Button size={"lg"} className="font-medium w-full">Register</Button></Link>
+            <Link  className="text-lg w-full font-semibold text-white" href={`/events/`}><Button size={"lg"} className="font-medium w-full">Register</Button></Link>
             </div>
           </div>
             </div>

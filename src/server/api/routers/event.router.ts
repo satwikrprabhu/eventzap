@@ -167,4 +167,26 @@ export const eventRouter = createTRPCRouter({
     }
     }),
 
+    registerForEvent: protectedProcedure
+    .input(
+        z.object({
+            eventId:z.string(),
+            teamId:z.string()
+        })
+    )
+    .mutation(async ({ctx,input})=>{
+        return await ctx.prisma.event.update({
+            where:{
+                id:input.eventId
+            },
+            data:{
+              team:{
+                    connect:{
+                        id:input.teamId
+                    }
+              }
+            }
+        })
+    }),
+
 })

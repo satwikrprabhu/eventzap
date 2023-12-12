@@ -33,16 +33,17 @@ import {
   import { useToast } from "@/components/ui/use-toast"
   import { DateTimePicker } from "./DateTimePicker"
   import { useState } from "react"
-
+  import {uploadFile} from "../../src/utils/file"
   //Schema for form validation
     const formSchema = z.object({
       name: z.string().min(2, {
         message: "Event name must be atleast 2 characters.",
       }),
-      poster: z.string( {
-        errorMap: (issue, ctx) => ({ message: 'Poster must be uploaded' })
-      })
-      ,
+      poster: z.any()// if no file files?.length === 0, if file files?.length === 1
+     // this should be greater than or equals (>=) not less that or equals (<=)
+     
+        ,
+
       description: z.string().min(20, {
         message: "Description must have atleast 20 characters.",
       }),
@@ -74,6 +75,7 @@ import {
 
       
       export function CreateEvent() {
+        const [files, setFiles] = useState<File>() // files?.length === 1
     const [selectedDate,setDate] = useState<Date>();
     const { toast } = useToast()
     const register = api.event.createEvent.useMutation(
@@ -106,9 +108,13 @@ import {
   
       //OnSubmit function
       async function onSubmit(values: z.infer<typeof formSchema>) {
+        if(files){
+       const water = await uploadFile(files);
+        
+        console.log(water);
         register.mutate({
           name:values.name,
-          posterUrl:values.poster,
+          posterUrl: water,
           description:values.description,
           fees:parseInt(values.fees),
           category:values.category,
@@ -120,6 +126,11 @@ import {
           offorOn:values.mode,
           eventDate:values.eventDate,
         })
+      }
+      else{
+        //throw toast for error
+        console.log("no file");
+      }
         console.log(values);
       }
       
@@ -177,7 +188,10 @@ import {
               <FormItem>
                 <FormLabel>Upload Event Poster</FormLabel >
                 <FormControl>
-                <Input id="picture" type="file"  {...field}/>
+                <Input id="poster" type="file" {...field} onChange={(file)=>{
+                  file.target.files &&
+                 setFiles(file?.target?.files[0])
+                }}/>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -217,7 +231,7 @@ import {
             name="eventDate"
             render={({ field: { onChange, value, ref, name, ...otherFieldProps } }) => (
               <FormItem>
-                <FormLabel>Event Date</FormLabel>
+                <FormLabel>Event Date</FormLabel><br/>
                 <FormControl>
                 <DateTimePicker {...otherFieldProps} // spread remaining field props
                     value={value} 
