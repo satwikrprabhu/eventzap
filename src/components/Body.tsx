@@ -1,8 +1,6 @@
 import React from 'react';
 import { animated, useSpring } from 'react-spring';
 
-
-
 import dynamic from 'next/dynamic'; // Import dynamic from next/dynamic
 
 const Body: React.FC = () => {
@@ -18,21 +16,13 @@ const Body: React.FC = () => {
       {/* Video Section */}
       <div className="mt-12 flex justify-center items-center">
         <video className="max-w-screen-xl w-full" autoPlay muted loop>
-          <source src="https://deands.com/wp-content/uploads/2023/07/2023De-Dreams-Website-20230713A-720PLR1.mp4" type="video/mp4" />
+          <source src="https://res.cloudinary.com/dh1bowbbe/video/upload/v1702448098/Incridea_2023___NMAMIT_NItte_qnn8ry.mp4" type="video/mp4" />
+        {/* <First /> */}
           Your browser does not support the video tag.
         </video>
       </div>  
 
-     
-
-
-
-
-
-
-
-
-
+    
       {/* this is the image sectin what i made */}
       <div className="mt-12 p-6 lg:p-12 bg-secondary text-white rounded-lg shadow-lg">
   <h3 className="section-heading text-3xl font-semibold mb-4">
