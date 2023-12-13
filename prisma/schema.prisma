@@ -67,9 +67,8 @@ model User {
   Organiser         Organiser?
   Role              Role          @default(USER)
   Coordinator       Coordinator?
-  TeamMember        TeamMember[]
-
-  @@unique([teamId])
+  // TeamMember        TeamMember[]
+  @@unique([teamId,id])
 }
 
 model VerificationToken {
@@ -86,24 +85,23 @@ model Team {
   isComplete  Boolean      @default(false)
   teamLead    User?        @relation(name: "TeamLead")
   eventId     String?
-  event       Event?       @relation(fields: [eventId], references: [id])
-  teamMembers User[]
+  event       Event[]      
+  members     User[]
   Winner      Winner?
   attended    Boolean      @default(false)
-  TeamMember  TeamMember[]
   @@index([eventId])
 }
 
-model TeamMember {
-  id     String @id @default(cuid())
-  teamId String
-  team   Team   @relation(fields: [teamId], references: [id])
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
+// model TeamMember {
+//   id     String @id @default(cuid())
+//   teamId String
+//   team   Team   @relation(fields: [teamId], references: [id])
+//   userId String
+//   user   User   @relation(fields: [userId], references: [id])
 
-  @@unique([teamId, userId])
-  @@index([userId])
-}
+//   @@unique([teamId, userId])
+//   @@index([userId])
+// }
 
 model Event {
   id          String        @id @default(cuid())
@@ -115,6 +113,7 @@ model Event {
   fees        Int           @default(0)
   created_at  DateTime      @default(now())
   updated_at  DateTime      @updatedAt
+  time        String?
   minTeamSize Int           @default(1)
   maxTeamSize Int           @default(1)
   released    Boolean       @default(false)

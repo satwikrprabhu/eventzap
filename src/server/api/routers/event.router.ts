@@ -1,5 +1,5 @@
 import {z} from 'zod'
-import { createTRPCRouter,protectedProcedure } from '../trpc'
+import { createTRPCRouter,protectedProcedure, publicProcedure } from '../trpc'
 export const eventRouter = createTRPCRouter({
     createEvent: protectedProcedure
     .input(
@@ -9,6 +9,7 @@ export const eventRouter = createTRPCRouter({
             posterUrl:z.string(),
             eventDate:z.date(),
             location:z.string(),
+            time:z.string(),
             fees:z.number(),
             eventType:z.enum(["Solo","Team"]),
             offorOn: z.enum(["Offline","Online"]),
@@ -74,10 +75,26 @@ export const eventRouter = createTRPCRouter({
     }
     })
     ,
-    getPublishedEvents: protectedProcedure.query(async ({ctx})=>{
+    getPublishedEvents: publicProcedure.query(async ({ctx})=>{
         return await ctx.prisma.event.findMany({
             where:{
                released:true
+            },
+            select:{
+                id:true,
+                name:true,
+                description:true,
+                posterUrl:true,
+                eventDate:true,
+                location:true,
+                fees:true,
+                eventType:true,
+                time:true,
+                offorOn:true,
+                minTeamSize:true,
+                maxTeamSize:true,
+                category:true,
+                Organiser:true,
             }
         })
     }),
@@ -149,6 +166,48 @@ export const eventRouter = createTRPCRouter({
     else{
         throw new Error("You are not an admin")
     }
+    }),
+
+    registerForEvent: protectedProcedure
+    .input(
+        z.object({
+            eventId:z.string(),
+            teamId:z.string()
+        })
+    )
+    .mutation(async ({ctx,input})=>{
+        return await ctx.prisma.event.update({
+            where:{
+                id:input.eventId
+            },
+            data:{
+              team:{
+                    connect:{
+                        id:input.teamId
+                    }
+              }
+            }
+        })
+    }),
+
+    hasTheUserRegisteredForEvent: protectedProcedure
+    .input(
+        z.object({
+            eventId:z.string(),
+            teamId:z.string()
+        })
+    )
+    .query(async ({ctx,input})=>{
+        return await ctx.prisma.event.findUnique({
+            where:{
+                id:input.eventId,
+                team:{
+                  some:{
+                        id:input.teamId
+                  }
+                }
+            },
+        })
     }),
 
 })
